@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Folders{% endblock %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="text-center">Manage Folders</h2>
+            <form method="POST" class="mb-4">
+                <div class="form-group">
+                    <label for="folder_name">Folder Name</label>
+                    <input type="text" class="form-control" name="folder_name" id="folder_name" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Create Folder</button>
+            </form>
+
+            <h4>Existing Folders</h4>
+            <ul class="list-group">
+                {% for folder in folders %}
+                    <li class="list-group-item">
+                        {{ folder.name }}
+                        <form method="POST" action="{{ url_for('views.delete_folder', folder_id=folder.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm float-right">Delete</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

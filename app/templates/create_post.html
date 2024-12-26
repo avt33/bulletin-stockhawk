@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Post{% endblock %}
+
+{% block content %}
+<!-- Include CKEditor -->
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="text-center">Create New Post</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" class="form-control" name="title" id="title" required>
+            </div>
+            <div class="form-group">
+                <label for="tags">Tags (comma-separated)</label>
+                <input type="text" class="form-control" name="tags" id="tags" placeholder="#example, #tag2">
+            </div>
+
+            <div class="form-group">
+                <label for="body">Body</label>
+                <textarea class="form-control" name="body" id="body" rows="10"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="folder">Folder</label>
+                <select class="form-control" name="folder" id="folder" required>
+                    {% for folder in folders %}
+                        <option value="{{ folder.id }}">{{ folder.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Create Post</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    class MyUploadAdapter {
+        constructor(loader) {
+            this.loader = loader;
+        }
+
+        upload() {
+            return this.loader.file
+                .then(file => new Promise((resolve, reject) => {
+                    const data = new FormData();
+                    data.append('upload', file);
+
+                    fetch('{{ url_for("views.upload_image") }}', {
+                        method: 'POST',
+                        body: data
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.url) {
+                            resolve({
+                                default: result.url
+                            });
+                        } else {
+                            reject(result.error || 'Upload failed');
+                        }
+                    })
+                    .catch(error => {
+                        reject(error);
+                    });
+                }));
+        }
+
+        abort() {
+            // Abort upload if needed
+        }
+    }
+
+    function MyCustomUploadAdapterPlugin(editor) {
+        editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+            return new MyUploadAdapter(loader);
+        };
+    }
+
+    ClassicEditor
+        .create(document.querySelector('#body'), {
+            extraPlugins: [MyCustomUploadAdapterPlugin],
+            toolbar: ['heading', '|', 
+                     'bold', 'italic', 'link', '|',
+                     'uploadImage', '|',
+                     'bulletedList', 'numberedList', '|',
+                     'blockQuote', 'insertTable', '|',
+                     'undo', 'redo'
+            ],
+            image: {
+                toolbar: [
+                    'imageStyle:inline',
+                    'imageStyle:wrapText',
+                    'imageStyle:breakText',
+                    '|',
+                    'imageTextAlternative'
+                ]
+            }
+        })
+        .then(editor => {
+            console.log('Editor initialized successfully');
+        })
+        .catch(error => {
+            console.error('Editor initialization error:', error);
+        });
+</script>
+
+<style>
+    .ck-content .image {
+        margin: 1em 0;
+    }
+    
+    .ck-content .image.image-style-wrap {
+        float: left;
+        margin-right: 1em;
+        max-width: 50%;
+    }
+    
+    .ck-content .image.image-style-align-right {
+        float: right;
+        margin-left: 1em;
+        max-width: 50%;
+    }
+</style>
+{% endblock %}

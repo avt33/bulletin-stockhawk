@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="article-container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('views.home') }}">Home</a></li>
+                    <li class="breadcrumb-item active">{{ post.folder.name }}</li>
+                </ol>
+            </nav>
+
+            <article class="article">
+                <header class="article-header">
+                    <h1 class="article-title">{{ post.title }}</h1>
+                    <div class="article-meta">
+                        <span class="text-muted">
+                            {{ post.date_created.strftime('%B %d, %Y') }}
+                        </span>
+                        {% if post.tags %}
+                            <div class="article-tags">
+                                {% for tag in post.tags.split(',') %}
+                                    <span class="badge bg-light text-dark">{{ tag.strip() }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </header>
+
+                <div class="article-content">
+                    {{ post.body|safe }}
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+{% endblock %}

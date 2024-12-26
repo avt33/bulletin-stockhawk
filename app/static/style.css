@@ -1,0 +1,22 @@
+.image-style-align-left {
+    float: left;
+    margin-right: 20px;
+    max-width: 50%;
+}
+
+.image-style-align-right {
+    float: right;
+    margin-left: 20px;
+    max-width: 50%;
+}
+
+.image-style-align-center {
+    margin: 0 auto;
+    display: block;
+    max-width: 80%;
+}
+
+.ck-content img {
+    max-width: 100%;
+    height: auto;
+} 
